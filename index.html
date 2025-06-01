@@ -1,0 +1,179 @@
+<!-- 
+# Writer is a better version of writing. 
+# Writer author:    ShuninYu (Github: @ShuninYu)
+# writer url:       https://github.com/ShuninYu/writer
+#
+# writing author:   Joseph Ernest (twitter: @JosephErnest)
+# writing url:      https://github.com/josephernest/writing
+# license:  MIT license
+# based on: Pagedown (https://code.google.com/archive/p/pagedown/, https://github.com/balpha/pagedown)
+#           Pagedown Extra (https://github.com/jmcmanus/pagedown-extra)
+#           MathJax (https://www.mathjax.org/)
+#           StackOverflow's editor (https://gist.github.com/gdalgas/a652bce3a173ddc59f66)
+#
+-->
+
+<!DOCTYPE html>
+<html class="fixedheight">
+<head>
+<link rel="icon" href="favicon.png" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />  
+<title>Writer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="monokai.min.css">
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+<style type="text/css">
+
+* { margin: 0; padding: 0; border: 0; outline: 0; }
+.unselectable { -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+.fixedheight { height: 100%; }
+.column { padding: 40px; }
+
+::-webkit-scrollbar { width: 12px; height: 12px; background-color: #a8ecfd; padding-top: 20px; padding-right: 10px; border-radius: 6px;}
+::-webkit-scrollbar-thumb { width: 12px; height: 12px; border-radius: 6px; background-color: #4999ad;}
+
+#wmd-button-bar { display: none; }
+#wmd-input { float: left; box-sizing: border-box; width: 50%; resize: horizontal; font-size: 16px; border-right: 1px solid #07c; height: 100%; overflow: y-scroll; padding-bottom: 60px;}
+#wmd-preview { overflow-y: auto; overflow-x: hidden; font-size: 16px; height: 100%; box-sizing: border-box; min-height: 100vh; }
+#wmd-preview li { margin-left: 20px; line-height: 1.5em;}
+#wmd-preview code, #wmd-input { font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,sans-serif; }
+#wmd-preview p code, #wmd-preview li code { background-color: #f5f5f5; white-space: pre-wrap; padding: 3px 5px; font-size: 16px; }
+#wmd-preview pre { background-color: #f5f5f5; padding: 5px; margin: 0.5em 0 1em; overflow-x: auto; word-wrap: normal; font-size: 16px; }
+#wmd-preview blockquote { background-color: #defcff; padding: 10px; margin: 0.5em 0 1em; overflow-x: auto; word-wrap: normal; border-left: 2px solid #0ae2f5; }
+#wmd-preview blockquote p { margin-bottom: 0; }
+#wmd-preview hr { background-color: #ddd; color: #ddd; height: 1px; margin-bottom: 15px; margin-top: 15px; }
+#wmd-preview h1 { margin-bottom: 0.5em; font-size: 2em; }
+#wmd-preview h2 { margin-bottom: 0.5em; font-size: 1.6em; }
+#wmd-preview h3 { margin-bottom: 0.5em; font-size: 1.3em; }
+#wmd-preview p { margin-bottom: 1em; line-height: 1.25; }
+#wmd-preview ul { margin-bottom: 1.5em; line-height: 1.25; }
+#wmd-preview img { max-width: 100%; max-height: 100%; }
+#wmd-preview table { display: block; width: 100%; overflow: auto; border-collapse: collapse; margin-bottom: 0.5em; }
+#wmd-preview table th { font-weight: bold; }
+#wmd-preview table th, #wmd-preview table td { padding: 6px 13px; border: 1px solid #ddd; }
+#wmd-preview table tr { background-color: #fff; border-top: 1px solid #ccc; }
+#wmd-preview table tr:nth-child(2n) { background-color: #f8f8f8; }
+#wmd-preview a { text-decoration: none; color: #07c; }
+#wmd-preview .pagebreak { border-bottom: 1px dashed #eee; padding-top: 20px; margin-bottom: 30px; }
+
+#help { display: none; position: fixed; font-size: 16px; top: 10%; height: 72%; left: 50%; transform: translateX(-50%); width: 50%; overflow: hidden; background-color: white; border: 4px solid #07c; border-radius: 20px;}
+#help .text { word-wrap: break-word !important; white-space: wrap !important; height: 88%; line-height: 1.5em; margin-top: 8%; padding-left: 4%; padding-right: 4%; padding-bottom: 4%; overflow-y: scroll;}
+.title { position: absolute; text-align: center; width: 100%; padding: 5px; pointer-events: none;}
+#closeicon { position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; cursor: pointer;}
+#openFileInput { position: absolute; display: none; }
+
+@media print { 
+    #helpicon { display: none; } 
+    #wmd-preview .pagebreak { opacity: 0; }
+}
+
+.dark-mode #wmd-input, .dark-mode #wmd-preview  { background-color: #212121; color: #FAFAFA; border-color: #07c;}
+.dark-mode #wmd-preview a, .dark-mode #help a, .dark-mode .wmd-prompt-dialog a { color: #90CAF9; }
+.dark-mode #wmd-preview p code, .dark-mode #wmd-preview li code, .dark-mode #wmd-preview pre { background-color: #424242; }
+.dark-mode #wmd-preview table th, .dark-mode #wmd-preview table td { border-color: #757575; }
+.dark-mode #wmd-preview table tr { background-color: #424242; border-color: #757575; }
+.dark-mode #help { background-color: #424242; border-color: #07c; color: #FAFAFA; }
+.dark-mode .wmd-prompt-dialog { background-color: #424242; color: #FAFAFA; }
+.dark-mode .wmd-prompt-dialog input { background-color: #212121; color: #FAFAFA; }
+.dark-mode #wmd-preview blockquote { background-color: #00796B; border-color: #004D40; }
+
+.bar { width: 100%; height: 2px; background-color: #07c; margin: 4px 0;}
+
+.toolbar {position: fixed; left: 0; box-sizing: border-box; height: 100%; width: 100px; background-color: #07c; z-index: 100; 
+    transform: translate(0 , 0); transition: transform 0.5s;}
+.foldbtn {position: absolute; width: 50px; height: 50px; background-color: #07c; left: 100px; bottom: 0; border-top-right-radius: 40px; cursor: pointer; z-index: 101;}
+.toolbtn {position: relative; display: block; background: none; cursor: pointer; left: 50%; transform: translateX(-50%); margin-top: 20px;}
+.toolbtn svg:hover {transform: scale(110%);}
+.big {width: 80px; height: 80px;}
+.mid {width: 60px; height: 60px;}
+.min {width: 50px; height: 50px;}
+
+.fold {transform: translate(-100% , 0);}
+</style>
+
+</head>
+<body class="fixedheight">
+<script src="Markdown.Converter.js"></script>
+<script src="Markdown.Sanitizer.js"></script>
+<script src="Markdown.Editor.js"></script>
+<script src="Markdown.Extra.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML-full"></script>
+<script src="mathjax-editing_writing.js"></script>
+<script src="jquery.min.js"></script>
+<script src="basic.js"></script>
+<input id="openFileInput" type="file" />
+
+<div class="toolbar fold" style="font-size: 0;">
+    <button class="toolbtn min" id="helpicon" style="position: absolute; bottom: 10px;" title="帮助"><svg fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="question" class="icon glyph"><g id="SVGRepo_bgCarrier" stroke-width="0"/><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/><g id="SVGRepo_iconCarrier"><path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,16a1,1,0,1,1,1-1A1,1,0,0,1,12,18Zm1.71-4.61c-.71.34-.71.39-.71.61a1,1,0,0,1-2,0,2.6,2.6,0,0,1,1.84-2.42C13.61,11.21,14,11,14,10a1,1,0,0,0-.49-.86A2.82,2.82,0,0,0,12,8.75c-.69,0-2,.26-2,1.25a1,1,0,0,1-2,0c0-1.88,1.68-3.25,4-3.25S16,8.12,16,10A3.41,3.41,0,0,1,13.71,13.39Z"/></g></svg></button>
+    <svg fill="#ffffff" viewBox="0 0 30.05 7.84" style="margin-top: 20px; width: 80%; margin-left: 10%;"><path d="M11.14.18v.2a.64.64,0,0,0-.35.12.71.71,0,0,0-.26.3s-.14.33-.35.86L7.83,7.84H7.61L5.75,3l-2,4.83H3.5L1,1.72A6.42,6.42,0,0,0,.5.61.66.66,0,0,0,0,.38V.18H3.26v.2A1,1,0,0,0,2.73.5.35.35,0,0,0,2.6.77a3.35,3.35,0,0,0,.27.89L4.35,5.29,5.53,2.45l-.31-.79a4.69,4.69,0,0,0-.4-.87A.79.79,0,0,0,4.5.48,1,1,0,0,0,4,.38V.18H7.61v.2a2.11,2.11,0,0,0-.54.06.43.43,0,0,0-.19.13.37.37,0,0,0-.06.21,3.75,3.75,0,0,0,.25.78L8.43,5.1,9.66,1.9a4.77,4.77,0,0,0,.23-.68,1.55,1.55,0,0,0,0-.34A.44.44,0,0,0,9.78.52,1.07,1.07,0,0,0,9.19.38V.18Z"/><path d="M12.71,2.5V3.67a4,4,0,0,1,.91-1.06,1.38,1.38,0,0,1,.74-.26.65.65,0,0,1,.5.19.77.77,0,0,1,.19.54.83.83,0,0,1-.18.57.56.56,0,0,1-.44.21.8.8,0,0,1-.51-.19,2.06,2.06,0,0,0-.25-.21.28.28,0,0,0-.13,0,.44.44,0,0,0-.3.12,1.08,1.08,0,0,0-.35.53,3.72,3.72,0,0,0-.18,1.19V6.76a1.19,1.19,0,0,0,0,.41.38.38,0,0,0,.2.21,1,1,0,0,0,.44.09v.2H10.6v-.2a.64.64,0,0,0,.46-.18,1.76,1.76,0,0,0,.12-.84V3.6a2.05,2.05,0,0,0,0-.57A.42.42,0,0,0,11,2.81a.83.83,0,0,0-.37-.1V2.5Z"/><path d="M17.34,2.5V6.6a1.33,1.33,0,0,0,.12.7.7.7,0,0,0,.5.17v.2H15.17v-.2a.67.67,0,0,0,.51-.2,1.25,1.25,0,0,0,.11-.67v-3a1.28,1.28,0,0,0-.13-.7.66.66,0,0,0-.49-.17V2.5ZM16.56,0a.81.81,0,0,1,.61.25.82.82,0,0,1,.25.61.82.82,0,0,1-.25.6.86.86,0,0,1-1.21,0,.82.82,0,0,1-.25-.6A.82.82,0,0,1,16,.25.82.82,0,0,1,16.56,0Z"/><path d="M20,.61V2.5h1.23v.55H20V6.24a2.2,2.2,0,0,0,.05.58.41.41,0,0,0,.14.21.37.37,0,0,0,.2.08c.24,0,.46-.19.68-.55l.16.12a1.5,1.5,0,0,1-1.45,1.06,1.32,1.32,0,0,1-.84-.27,1.23,1.23,0,0,1-.43-.61,4.9,4.9,0,0,1-.06-1V3.05h-.67V2.86a7.71,7.71,0,0,0,1.19-1A6.24,6.24,0,0,0,19.77.61Z"/><path d="M25.5,4.9H22.65a2.74,2.74,0,0,0,.55,1.63,1.17,1.17,0,0,0,.92.45,1.11,1.11,0,0,0,.61-.18,2.39,2.39,0,0,0,.58-.67l.19.12a3.2,3.2,0,0,1-.94,1.22,2.16,2.16,0,0,1-2.92-.53,3.09,3.09,0,0,1-.47-1.77,2.92,2.92,0,0,1,.7-2.06,2.14,2.14,0,0,1,1.64-.76A1.76,1.76,0,0,1,24.87,3,3,3,0,0,1,25.5,4.9Zm-1.37-.37A5.46,5.46,0,0,0,24,3.31a1,1,0,0,0-.31-.5.43.43,0,0,0-.31-.1A.55.55,0,0,0,23,3a2.5,2.5,0,0,0-.32,1.35v.19Z"/><path d="M27.72,2.5V3.67a4,4,0,0,1,.91-1.06,1.33,1.33,0,0,1,.74-.26.65.65,0,0,1,.5.19.77.77,0,0,1,.18.54.83.83,0,0,1-.17.57.58.58,0,0,1-.44.21.78.78,0,0,1-.51-.19,2.06,2.06,0,0,0-.25-.21.28.28,0,0,0-.13,0,.48.48,0,0,0-.31.12,1.13,1.13,0,0,0-.34.53,3.72,3.72,0,0,0-.18,1.19V6.76a1.19,1.19,0,0,0,0,.41.39.39,0,0,0,.19.21,1.1,1.1,0,0,0,.45.09v.2h-2.8v-.2a.66.66,0,0,0,.46-.18,2,2,0,0,0,.11-.84V3.6a2.22,2.22,0,0,0,0-.57A.42.42,0,0,0,26,2.81a.83.83,0,0,0-.37-.1V2.5Z"/></svg>
+    
+    <div style="font-size: 0;">
+        <button class="toolbtn min" id="cd" title="切换显示模式（仅编辑区/仅预览区/双屏同步显示）"><svg viewBox="0 0 24 24" fill="none"><path d="M2 5C2 3.34315 3.34315 2 5 2H19C20.6569 2 22 3.34315 22 5V8L9 8H2V5Z" fill="#ffffff"/><path d="M2 10V19C2 20.6569 3.34315 22 5 22H8V10L2 10Z" fill="#ffffff"/><path d="M10 22H19C20.6569 22 22 20.6569 22 19V10L10 10V22Z" fill="#ffffff"/></svg></button>
+        <button class="toolbtn min" id="cp" title="打印或导出为PDF"><svg fill="#ffffff" viewBox="-0.5 0.5 42 42"><path d="M12.5,30.504V33.5h15v-2.996H12.5z M12.5,25.504V28.5h15v-2.996H12.5z M3.5,28.5h3v8.002c-0.01,2.43,0.548,2.998,3,2.998h21 c2.452,0,3-0.452,3-2.998V28.5h3c2.55,0.04,3.029-0.527,3-2.998v-11c0-2.35-0.38-3.002-3-3.002h-3V6.502 c0.029-2.47-0.45-3.002-3-3.002h-21c-2.4,0-3.01,0.572-3,3.002V11.5h-3c-2.58,0-3,0.562-3,3.002v11C0.49,27.932,1.1,28.54,3.5,28.5z M30.5,36.5h-21v-13h21V36.5z M32.38,18.002c0-0.9,0.72-1.619,1.62-1.619s1.62,0.719,1.62,1.619s-0.72,1.62-1.62,1.62 S32.38,18.902,32.38,18.002z M9.5,6.5h21v5.004h-21V6.5z"/></svg></button>
+        <button class="toolbtn min" id="cs" title="保存源代码为.MD文件"><svg fill="#ffffff" viewBox="0 0 32 32"><path d="M29.693 25.849h-27.385c-1.271 0-2.307-1.036-2.307-2.307v-15.083c0-1.271 1.036-2.307 2.307-2.307h27.385c1.271 0 2.307 1.036 2.307 2.307v15.078c0 1.276-1.031 2.307-2.307 2.307zM7.693 21.229v-6l3.078 3.849 3.073-3.849v6h3.078v-10.458h-3.078l-3.073 3.849-3.078-3.849h-3.078v10.464zM28.307 16h-3.078v-5.229h-3.073v5.229h-3.078l4.615 5.385z"/></svg></button>
+        <button class="toolbtn min" id="cso" title="打开.MD文件"><svg viewBox="0 0 512 512" fill="#ffffff"><g><path d="M503.283,233.406c-8.198-11.548-21.106-18.678-35.108-19.704v-44.571c0.007-12.334-5.052-23.663-13.14-31.724 c-8.068-8.088-19.39-13.14-31.724-13.134H220.167c-2.495,0-4.916-0.951-6.755-2.681l0.013,0.021L177.73,88.139 c-8.321-7.794-19.287-12.136-30.684-12.136H88.698c-12.334-0.007-23.663,5.053-31.724,13.141 c-8.088,8.06-13.147,19.39-13.14,31.724v92.834c-14.002,1.026-26.911,8.156-35.109,19.711C2.981,241.509,0,251.094,0,260.768 c0,5.244,0.875,10.53,2.66,15.616l42.15,120.524c0.247,0.69,0.499,1.299,0.821,1.956c1.935,3.917,3.74,7.766,5.77,11.609 c3.07,5.695,6.584,11.78,12.943,17.14c3.158,2.632,7.035,4.888,11.253,6.317c4.225,1.443,8.676,2.072,13.1,2.066H423.31 c7.302,0.04,14.18-2.352,19.349-5.71c7.849-5.086,12.491-11.568,16.032-17.202c3.48-5.647,5.894-10.905,7.412-13.688 c0.486-0.916,0.746-1.511,1.087-2.488l42.157-120.531c1.778-5.08,2.653-10.365,2.653-15.609 C512,251.094,509.026,241.509,503.283,233.406z M433.168,213.497H78.838v-92.628c0.007-2.776,1.074-5.128,2.885-6.974 c1.846-1.812,4.198-2.878,6.974-2.885h58.348c2.509,0,4.908,0.951,6.748,2.667l35.69,33.468l0.013,0.02 c8.3,7.76,19.26,12.115,30.671,12.115H423.31c2.776,0.006,5.134,1.074,6.974,2.885c1.812,1.839,2.879,4.191,2.885,6.967V213.497z" /></g></svg></button>
+        <button class="toolbtn min" id="csl" title="启用/禁用LaTeX（数学公式渲染）"><svg fill="#ffffff" viewBox="0 0 115 120"><path d="m 24.827171,12.268815 0,3.124898 5.505773,0 0,37.052362 -5.505773,0 0,3.050496 34.671488,0 0,-10.788339 -3.571312,0 0,7.291429 -19.716619,0 0,-36.605948 5.505773,0 0,-3.124898 -16.88933,0 z m 56.917786,3.273702 -15.475686,40.177261 -3.794519,0 0,3.124898 12.201983,0 0,-3.124898 -4.761749,0 3.645714,-9.449097 18.15417,0 3.645714,9.449097 -4.836152,0 0,3.124898 15.773298,0 0,-3.124898 -4.24094,0 -15.475681,-40.177261 -4.836152,0 z m 0.96723,6.99382 7.886648,20.609446 -15.847698,0 7.96105,-20.609446 z m -70.235804,36.605948 0,10.19312 3.571312,0 0,-6.69621 12.7228,0 0,36.754753 -5.505773,0 0,3.050492 16.88933,0 0,-3.050492 -5.505773,0 0,-36.754753 12.722799,0 0,6.69621 3.49691,0 0,-10.19312 -38.391605,0 z m 61.605133,3.050496 0,3.050496 4.612945,0 12.648397,18.972595 -12.42519,18.154168 -4.984956,0 0,3.0505 14.285248,0 0,-3.0505 -5.580175,0 10.565131,-15.475684 10.341924,15.475684 -5.13376,0 0,3.0505 17.11254,0 0,-3.0505 -4.61295,0 L 97.220642,81.9094 108.6786,65.243277 l 4.91056,0 0,-3.050496 -14.21085,0 0,3.050496 5.58018,0 -9.523504,13.987639 -9.300291,-13.987639 5.133761,0 0,-3.050496 -17.18694,0 z m -31.993004,11.606764 0,3.050496 5.505773,0 0,37.126769 -5.505773,0 0,3.05049 35.341109,0 0,-9.5979 -3.571312,0 0,6.02659 -20.311837,0 0,-18.079768 14.136444,0 0,5.431368 3.571312,0 0,-14.43405 -3.571312,0 0,5.43137 -14.136444,0 0,-14.508455 19.865423,0 0,6.100991 3.571312,0 0,-9.597901 -34.894695,0 z"/></svg></button>
+        <button class="toolbtn min" id="csd" title="深色/浅色模式切换"><svg viewBox="0 0 48 48" fill="#ffffff"><path d="M14,24A10,10,0,0,0,24,34V14A10,10,0,0,0,14,24Z"/><path d="M24,2A22,22,0,1,0,46,24,21.9,21.9,0,0,0,24,2ZM6,24A18.1,18.1,0,0,1,24,6v8a10,10,0,0,1,0,20v8A18.1,18.1,0,0,1,6,24Z"/></svg></button>
+    </div>
+
+    <div class="foldbtn"><svg style="width: 40px; height: 40px; padding-top: 10px; padding-left: 3px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M20.1 9.2214C18.29 9.2214 17.55 7.9414 18.45 6.3714C18.97 5.4614 18.66 4.3014 17.75 3.7814L16.02 2.7914C15.23 2.3214 14.21 2.6014 13.74 3.3914L13.63 3.5814C12.73 5.1514 11.25 5.1514 10.34 3.5814L10.23 3.3914C9.78 2.6014 8.76 2.3214 7.97 2.7914L6.24 3.7814C5.33 4.3014 5.02 5.4714 5.54 6.3814C6.45 7.9414 5.71 9.2214 3.9 9.2214C2.86 9.2214 2 10.0714 2 11.1214V12.8814C2 13.9214 2.85 14.7814 3.9 14.7814C5.71 14.7814 6.45 16.0614 5.54 17.6314C5.02 18.5414 5.33 19.7014 6.24 20.2214L7.97 21.2114C8.76 21.6814 9.78 21.4014 10.25 20.6114L10.36 20.4214C11.26 18.8514 12.74 18.8514 13.65 20.4214L13.76 20.6114C14.23 21.4014 15.25 21.6814 16.04 21.2114L17.77 20.2214C18.68 19.7014 18.99 18.5314 18.47 17.6314C17.56 16.0614 18.3 14.7814 20.11 14.7814C21.15 14.7814 22.01 13.9314 22.01 12.8814V11.1214C22 10.0814 21.15 9.2214 20.1 9.2214ZM12 15.2514C10.21 15.2514 8.75 13.7914 8.75 12.0014C8.75 10.2114 10.21 8.7514 12 8.7514C13.79 8.7514 15.25 10.2114 15.25 12.0014C15.25 13.7914 13.79 15.2514 12 15.2514Z" fill="#ffffff"></path></g></svg></div>
+</div>
+<textarea id="wmd-input" class="column wmd-input" spellcheck="false"></textarea>
+<div id="wmd-preview" class="column wmd-preview">
+<noscript>本文本编辑器需要使用JavaScript。</noscript>
+</div>
+<div id="help">
+<div id="closeicon" class="unselectable"><svg fill="#07c" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="cross-circle" class="icon glyph"><g id="SVGRepo_bgCarrier" stroke-width="0"/><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/><g id="SVGRepo_iconCarrier"><path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm3.71,12.29a1,1,0,0,1,0,1.42,1,1,0,0,1-1.42,0L12,13.42,9.71,15.71a1,1,0,0,1-1.42,0,1,1,0,0,1,0-1.42L10.58,12,8.29,9.71A1,1,0,0,1,9.71,8.29L12,10.58l2.29-2.29a1,1,0,0,1,1.42,1.42L13.42,12Z"/></g></svg></div>
+<div class="title"><h1>Writer 帮助</h1></div>
+<div class="text">
+使用方法：<br>
+在左侧窗口输入markdown文本，结果将在右侧呈现。<br>
+同步显示模式下，可以拖动底部标签修改窗口尺寸<br><br>
+
+快捷键<br>
+<div class="bar"></div>
+Ctrl + D：切换显示模式（仅编辑区/仅预览区/双屏同步显示）<br>
+Ctrl + P：打印或导出为PDF<br>
+Ctrl + S：保存源代码为.MD文件<br>
+Ctrl + Shift + O：打开.MD文件<br>
+
+Ctrl + Shift + L：启用/禁用LaTeX（数学公式渲染）<br>
+Ctrl + Shift + D：深色/浅色模式切换<br>
+Ctrl + Shift + H：显示帮助对话框<br><br>
+
+Markdown语法<br>
+<div class="bar"></div>
+*请注意，在markdown中部分效果需要上下间隔一行才会正常生效。<br><br>
+# 一级标题（符号和文字间需要空格！）<br>
+## 二级标题（符号和文字间需要空格！）<br>
+### 三级标题（符号和文字间需要空格！）<br>
+1. 有序列表（符号和文字间需要空格！）<br>
+- 无序列表（符号和文字间需要空格！）<br>
+* 无序列表2（符号和文字间需要空格！）<br>
++ 无序列表3（符号和文字间需要空格！）<br>
+这是 *<em>斜体</em>*<br>
+这是 **<strong>粗体</strong>**<br>
+这是 [超链接](https://www.example.com/)<br>
+这是 ![图片](imagelink.jpg)<br>
+这是 ```代码段```<br>
+代码段用\`...\`表示或段落首行空4格<br>
+> 引用段落示例（需要空格！）<br><br>
+
+LaTeX语法<br>
+<div class="bar"></div>
+公式 $x^2+1$ 将内联显示<br>
+公式 $$x^2+1$$ 将段落显示<br><br>
+
+特殊语法<br>
+<div class="bar"></div>
+\pagebreak 在打印/导出PDF时触发分页符<br><br>
+
+关于Writer<br>
+<div class="bar"></div>
+<a href="https://github.com/ShuninYu/writer">Writer</a>是<a href="https://github.com/josephernest/writer">Writing</a>的汉化增强版本，由<a href="https://github.com/ShuninYu">@孤灯从流</a>制作。<br>
+<a href="https://github.com/josephernest/writing">Writing</a>由<a href="https://github.com/josephernest">@JosephErnest</a>制作。<br><br><br>
+</div>    
+</div>
+    
+</body>
+</html>
